@@ -86,7 +86,10 @@ pub fn update_tray_usage_summary(summary: &str) {
             lines.truncate(TRAY_USAGE_SUMMARY_MAX_LINES);
         }
 
-        let joined = lines.join("\n");
+        // On Linux GTK menus placed at the screen top boundary, a multiline MenuItem
+        // can have its first line vertically clipped by the window edge. Adding a leading
+        // newline provides vertical clearance so the text is never clipped.
+        let joined = format!("\n  {}", lines.join("\n  "));
         let _ = item.set_text(&joined);
     }
 }
