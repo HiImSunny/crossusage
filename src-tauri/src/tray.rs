@@ -82,15 +82,29 @@ pub fn update_tray_usage_summary(summary: &str) {
         if lines.is_empty() {
             lines.push("CrossUsage".to_string());
         }
-        if lines.len() > TRAY_USAGE_SUMMARY_MAX_LINES {
-            lines.truncate(TRAY_USAGE_SUMMARY_MAX_LINES);
-        }
 
-        // On Linux GTK menus placed at the screen top boundary, a multiline MenuItem
-        // can have its first line vertically clipped by the window edge. Adding a leading
-        // newline provides vertical clearance so the text is never clipped.
-        let joined = format!("\n  {}", lines.join("\n  "));
-        let _ = item.set_text(&joined);
+        // GTK MenuItem in Linux AppIndicator is strictly single-line.
+        // Embedding newlines (\n) causes GTK MenuShell to miscalculate row heights,
+        // which renders subsequent menu items (like "Show Stats") directly on top
+        // of earlier text lines. Formatting as a single clean summary line eliminates
+        // overlapping and vertical clipping completely.
+        let display_text = if lines.len() == 1 {
+            lines[0].clone()
+        } else {
+            let first = &lines[0];
+            let second = &lines[1];
+            if first == "CrossUsage" {
+                if lines.len() > 2 {
+                    format!("CrossUsage · {} (+{})", second, lines.len() - 2)
+                } else {
+                    format!("CrossUsage · {}", second)
+                }
+            } else {
+                format!("{} · {}", first, second)
+            }
+        };
+
+        let _ = item.set_text(&display_text);
     }
 }
 
