@@ -107,8 +107,8 @@ export function buildUsageInsights(args: {
 
       if (primary.format?.kind === "percent") {
         const rem = remainingPercent(primary.used, primary.limit)
-        // Only trigger "tight" insight when remaining quota is actually low (<= 25%)
-        if (rem != null && rem <= 25) {
+        // Only trigger "tight" insight when remaining quota is actually low (<= 20%)
+        if (rem != null && rem <= 20) {
           tightCandidates.push({
             kind: "tight",
             instanceId,

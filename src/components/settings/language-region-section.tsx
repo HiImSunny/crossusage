@@ -106,11 +106,6 @@ export function LanguageRegionSection({
               <Coins className="size-4 text-primary/80" />
               <span>{t("settings.languageRegion.currency")}</span>
             </div>
-            {displayCurrency === "auto" ? (
-              <span className="text-[10px] text-muted-foreground font-medium px-1.5 py-0.5 rounded-md bg-muted/60">
-                {t("settings.languageRegion.currencyAutoHint")}
-              </span>
-            ) : null}
           </div>
 
           <div className="relative">
@@ -137,6 +132,11 @@ export function LanguageRegionSection({
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           </div>
+          {displayCurrency === "auto" ? (
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              {t("settings.languageRegion.currencyAutoHint")}
+            </p>
+          ) : null}
         </div>
       </div>
     </section>

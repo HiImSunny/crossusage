@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 export type ProviderWidgetGroup = {
   pluginId: string
   name: string
+  instanceLabel?: string
   iconUrl?: string
   brandColor?: string
   metrics: WidgetData[]
@@ -64,11 +65,6 @@ function ProviderCard({
   const charts = group.metrics.filter((m) => m.kind === "barChart")
   const unbounded = group.metrics.filter((m) => !m.bounded && m.kind !== "barChart")
 
-  // Extract account label if group.name is formatted like "Provider (Account)"
-  const accountMatch = group.name.match(/^(.*?)\s*\((.*?)\)$/)
-  const providerTitle = accountMatch ? accountMatch[1] : group.name
-  const accountBadge = accountMatch ? accountMatch[2] : null
-
   return (
     <section
       className="rounded-xl border bg-card/85 overflow-hidden motion-card shadow-xs"
@@ -95,11 +91,11 @@ function ProviderCard({
         )}
         <div className="flex items-center gap-1.5 flex-1 min-w-0">
           <h3 className={cn("font-semibold truncate motion-title", compact ? "text-sm" : "text-base")}>
-            {providerTitle}
+            {group.name}
           </h3>
-          {accountBadge ? (
+          {group.instanceLabel ? (
             <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border/60 shrink-0 truncate max-w-[180px]">
-              {accountBadge}
+              {group.instanceLabel}
             </span>
           ) : null}
         </div>
@@ -117,7 +113,7 @@ function ProviderCard({
               bounded.length > 0 || charts.length > 0
                 ? "mt-1.5 pt-1.5 border-t border-border/50"
                 : "",
-              unbounded.length > 1 ? "grid grid-cols-2 gap-x-3 gap-y-0.5" : "space-y-0",
+              "space-y-0",
             )}
           >
             {unbounded.map((m) => (
@@ -186,9 +182,14 @@ export function buildProviderWidgetGroups(args: {
         metrics.push(data)
       }
       if (metrics.length === 0) return null
+      let name = meta.name
+      if (meta.instanceLabel && name.endsWith(` (${meta.instanceLabel})`)) {
+        name = name.slice(0, -(meta.instanceLabel.length + 3))
+      }
       return {
         pluginId,
-        name: meta.name,
+        name,
+        instanceLabel: meta.instanceLabel,
         iconUrl: meta.iconUrl,
         brandColor: meta.brandColor,
         metrics,
